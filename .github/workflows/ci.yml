@@ -59,14 +59,14 @@ jobs:
     - name: Set up macOS (AMD64 and ARM64)
       if: runner.os == 'macOS'
       run: |
-        brew install coreutils tree autoconf automake libtool
+        brew install coreutils tree autoconf automake libtool gcc@11
         brew uninstall jq
 
     # --- Build ---
 
     - name: Build on Linux (${{ env.AMD64_FREEBSD_GCC }})
       if: runner.os == 'Linux'
-      uses: cross-platform-actions/action@v0.23.0
+      uses: cross-platform-actions/action@v0.25.0
       env:
         PREFIX: ${{ env.AMD64_FREEBSD_GCC }}
         CC: gcc
