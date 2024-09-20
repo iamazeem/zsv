@@ -11,11 +11,45 @@ on:
     types: [published]
 
 jobs:
+  tag:
+    name: tag
+    runs-on: ubuntu-latest
+
+    outputs:
+      TAG: ${{ steps.tag.outputs.TAG || '0.3.6' }}
+
+    steps:
+    - name: Set TAG on release
+      if: startsWith(github.ref, 'refs/tags/v')
+      id: tag
+      shell: bash
+      run: |
+        TAG="$GITHUB_REF_NAME"
+        echo "TAG: $TAG"
+        if [[ $TAG == "v"* ]]; then
+          TAG="${TAG:1}"
+        fi
+        echo "TAG: $TAG"
+        echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
+
+  format:
+    name: format
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Run clang-format
+      run: ./scripts/ci-run-clang-format.sh
+
   ci:
     name: ci
+    needs: [format, tag]
+
     strategy:
       matrix:
-        os: [ubuntu-20.04, macos-12, macos-14]
+        os: [ubuntu-20.04, macos-13, macos-14]
 
     runs-on: ${{ matrix.os }}
 
@@ -23,7 +57,7 @@ jobs:
       contents: write
 
     env:
-      TAG: "0.3.6"
+      TAG: ${{ needs.tag.outputs.TAG }}
       AMD64_LINUX_GCC: amd64-linux-gcc
       AMD64_LINUX_CLANG: amd64-linux-clang
       AMD64_WINDOWS_MINGW: amd64-windows-mingw
@@ -34,18 +68,6 @@ jobs:
       ARTIFACT_RETENTION_DAYS: 5
 
     steps:
-    - name: Get tag if tagged/released and set TAG env var
-      if: startsWith(github.ref, 'refs/tags/v')
-      shell: bash
-      run: |
-        TAG="$GITHUB_REF_NAME"
-        echo "TAG: $TAG"
-        if [[ $TAG == "v"* ]]; then
-          TAG="${TAG:1}"
-        fi
-        echo "TAG: $TAG"
-        echo "TAG=$TAG" >> "$GITHUB_ENV"
-
     - name: Checkout
       uses: actions/checkout@v4
 
@@ -59,7 +81,7 @@ jobs:
     - name: Set up macOS (AMD64 and ARM64)
       if: runner.os == 'macOS'
       run: |
-        brew install coreutils tree autoconf automake libtool gcc@11
+        brew install --quiet coreutils tree autoconf automake libtool
         brew uninstall jq
 
     # --- Build ---
@@ -127,10 +149,10 @@ jobs:
         ./scripts/ci-create-nuget-package.sh
 
     - name: Build on macOS (${{ env.AMD64_MACOSX_GCC }})
-      if: matrix.os == 'macos-12'
+      if: matrix.os == 'macos-13'
       env:
         PREFIX: ${{ env.AMD64_MACOSX_GCC }}
-        CC: gcc-11
+        CC: gcc-13
         MAKE: make
         RUN_TESTS: false
       shell: bash
@@ -142,7 +164,7 @@ jobs:
       if: matrix.os == 'macos-14'
       env:
         PREFIX: ${{ env.ARM64_MACOSX_GCC }}
-        CC: gcc-11
+        CC: gcc-13
         MAKE: make
         RUN_TESTS: false
       shell: bash
@@ -244,7 +266,7 @@ jobs:
         if-no-files-found: error
 
     - name: Upload (zsv-${{ env.TAG }}-${{ env.AMD64_MACOSX_GCC }}.zip)
-      if: matrix.os == 'macos-12'
+      if: matrix.os == 'macos-13'
       uses: actions/upload-artifact@v4
       env:
         ARTIFACT_NAME: zsv-${{ env.TAG }}-${{ env.AMD64_MACOSX_GCC }}.zip
@@ -310,7 +332,7 @@ jobs:
         if-no-files-found: error
 
     - name: Upload (zsv-${{ env.TAG }}-${{ env.AMD64_MACOSX_GCC }}.tar.gz)
-      if: matrix.os == 'macos-12'
+      if: matrix.os == 'macos-13'
       uses: actions/upload-artifact@v4
       env:
         ARTIFACT_NAME: zsv-${{ env.TAG }}-${{ env.AMD64_MACOSX_GCC }}.tar.gz
@@ -358,7 +380,7 @@ jobs:
     # --- Update homebrew tap ---
 
     - name: Update homebrew tap (liquidaty/homebrew-zsv)
-      if: ${{ startsWith(github.ref, 'refs/tags/v') && matrix.os == 'macos-12' }}
+      if: ${{ startsWith(github.ref, 'refs/tags/v') && matrix.os == 'macos-13' }}
       env:
         HOMEBREW_TAP_DEPLOY_KEY: ${{ secrets.HOMEBREW_TAP_DEPLOY_KEY }}
         TAG: ${{ env.TAG }}
