@@ -295,8 +295,9 @@ ZSV_EXPORT enum zsv_status zsv_set_fixed_offsets(zsv_parser parser, size_t count
     return zsv_status_memory;
   }
   parser->fixed.count = count;
-  for (unsigned i = 0; i < count; i++)
+  for (unsigned i = 0; i < count; i++) {
     parser->fixed.offsets[i] = offsets[i];
+  }
 
   parser->mode = ZSV_MODE_FIXED;
   parser->checked_bom = 1;

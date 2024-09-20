@@ -95,7 +95,8 @@ int ZSV_MAIN_NO_OPTIONS_FUNC(ZSV_COMMAND)(int argc, const char *argv[]) {
           printf("Are you sure you want to remove the file %s%s?\n", filepath,
                  remove_cache ? " and all of its cache contents" : "");
         char buff[64];
-        if (fscanf(stdin, "%60s", buff) && strchr("Yy", buff[0]))
+        const int ret = fscanf(stdin, "%60s", buff);
+        if (ret && ret != EOF && strchr("Yy", buff[0]))
           ok = 1;
       }
 #endif
