@@ -784,7 +784,7 @@ int ZSV_MAIN_FUNC(ZSV_COMMAND)(int argc, const char *argv[], struct zsv_opts *op
             data.fixed.count++;
         free(data.fixed.offsets);
         data.fixed.offsets = malloc(data.fixed.count * sizeof(*data.fixed.offsets));
-        if (data.fixed.offsets) {
+        if (!data.fixed.offsets) {
           stat = zsv_printerr(1, "Out of memory!");
           break;
         }
