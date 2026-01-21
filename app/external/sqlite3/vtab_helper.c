@@ -2,8 +2,8 @@
  * Excerpted from https://sqlite.org/src/doc/tip/ext/misc/csv.c
  */
 
-#define _GNU_SOURCE
-#include <stdio.h>
+// #define _GNU_SOURCE
+// #include <stdio.h>
 
 /* Skip leading whitespace.  Return a pointer to the first non-whitespace
 ** character, or to the zero terminator if the string has only whitespace */
