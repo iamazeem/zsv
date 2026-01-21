@@ -53,7 +53,8 @@ node_modules
 *.rpm
 *.nupkg
 build
-app/external
+app/external/*
+!app/external/sqlite3
 install.sh
 .artifacts
 .benchmarks
