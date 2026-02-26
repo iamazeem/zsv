@@ -88,7 +88,7 @@ if [ "$RUN_TESTS" = true ]; then
   "$MAKE" test
   cd app/test
   i=1
-  while [ $i -le 10 ]; do
+  while [ $i -le 20 ]; do
     make test-overwrite
     i=$((i + 1))
   done
