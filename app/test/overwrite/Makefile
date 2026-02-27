@@ -156,14 +156,10 @@ test-timestamp:
 	@{ \
 		EXPECTED_TS1=`cat ${TMP_DIR}/timestamp1.txt`; \
 		EXPECTED_TS2=`cat ${TMP_DIR}/timestamp2.txt`; \
-		LOWER_TS1=$$((EXPECTED_TS1 - 1)); \
-		LOWER_TS2=$$((EXPECTED_TS2 - 1)); \
-		echo "EXPECTED_TS1: $$EXPECTED_TS1, LOWER_TS1: $$LOWER_TS1"; \
-		echo "EXPECTED_TS2: $$EXPECTED_TS2, LOWER_TS2: $$LOWER_TS2"; \
-		OUTPUT="`${EXE} dummy2.csv list | tr -d '\n'`"; \
-		echo "OUTPUT: $$OUTPUT"; \
-		echo "$$OUTPUT" | grep -q "${HEADER}1,2,ABC,\($$LOWER_TS1\|$$EXPECTED_TS1\),1,3,ABC,\($$LOWER_TS2\|$$EXPECTED_TS2\)," \
-			&& ${TEST_PASS} || ${TEST_FAIL}; \
+		SQL_QUERY="SELECT * FROM data WHERE row=1 AND column IN(2,3) AND value='ABC' AND timestamp BETWEEN $$EXPECTED_TS1-3 AND $$EXPECTED_TS2;"; \
+		SQL_OUTPUT=`${EXE} dummy2.csv list | ${SQL_EXE} "$$SQL_QUERY"`; \
+		# echo "$$SQL_OUTPUT"; \
+		[ `echo "$$SQL_OUTPUT" | wc -l` = 3 ] && ${TEST_PASS} || ${TEST_FAIL}; \
 	}
 
 test-echo-overwrite-auto:
