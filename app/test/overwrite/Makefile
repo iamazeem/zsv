@@ -155,10 +155,15 @@ test-timestamp:
 	@(${PREFIX} ${EXE} dummy2.csv add 1-3 ABC && ${STAT_MOD_TS} .zsv/data/dummy2.csv/overwrite.sqlite3 > ${TMP_DIR}/timestamp2.txt)
 	@{ \
 		EXPECTED_TS1=`cat ${TMP_DIR}/timestamp1.txt`; \
+		SQL_QUERY1="SELECT * FROM data WHERE row=1 AND column=2 AND value='ABC' AND timestamp BETWEEN $$EXPECTED_TS1-3 AND $$EXPECTED_TS1;"; \
+		SQL_OUTPUT1=`${EXE} dummy2.csv list | ${SQL_EXE} "$$SQL_QUERY1"`; \
+		[ `echo "$$SQL_OUTPUT1" | wc -l` = 2 ] && ${TEST_PASS} || ${TEST_FAIL}; \
+	}
+	@{ \
 		EXPECTED_TS2=`cat ${TMP_DIR}/timestamp2.txt`; \
-		SQL_QUERY="SELECT * FROM data WHERE row=1 AND column IN(2,3) AND value='ABC' AND timestamp BETWEEN $$EXPECTED_TS1-3 AND $$EXPECTED_TS2;"; \
-		SQL_OUTPUT=`${EXE} dummy2.csv list | ${SQL_EXE} "$$SQL_QUERY"`; \
-		[ `echo "$$SQL_OUTPUT" | wc -l` = 3 ] && ${TEST_PASS} || ${TEST_FAIL}; \
+		SQL_QUERY2="SELECT * FROM data WHERE row=1 AND column=3 AND value='ABC' AND timestamp BETWEEN $$EXPECTED_TS2-3 AND $$EXPECTED_TS2;"; \
+		SQL_OUTPUT2=`${EXE} dummy2.csv list | ${SQL_EXE} "$$SQL_QUERY2"`; \
+		[ `echo "$$SQL_OUTPUT2" | wc -l` = 2 ] && ${TEST_PASS} || ${TEST_FAIL}; \
 	}
 
 test-echo-overwrite-auto:
