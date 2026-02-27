@@ -158,7 +158,6 @@ test-timestamp:
 		EXPECTED_TS2=`cat ${TMP_DIR}/timestamp2.txt`; \
 		SQL_QUERY="SELECT * FROM data WHERE row=1 AND column IN(2,3) AND value='ABC' AND timestamp BETWEEN $$EXPECTED_TS1-3 AND $$EXPECTED_TS2;"; \
 		SQL_OUTPUT=`${EXE} dummy2.csv list | ${SQL_EXE} "$$SQL_QUERY"`; \
-		# echo "$$SQL_OUTPUT"; \
 		[ `echo "$$SQL_OUTPUT" | wc -l` = 3 ] && ${TEST_PASS} || ${TEST_FAIL}; \
 	}
 
