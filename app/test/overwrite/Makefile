@@ -156,8 +156,8 @@ test-timestamp:
 	@{ \
 		EXPECTED_TS1=`cat ${TMP_DIR}/timestamp1.txt`; \
 		EXPECTED_TS2=`cat ${TMP_DIR}/timestamp2.txt`; \
-		LOWER_TS1=$$((EXPECTED_TS1 - 3)); \
-		LOWER_TS2=$$((EXPECTED_TS2 - 3)); \
+		LOWER_TS1=$$((EXPECTED_TS1 - 1)); \
+		LOWER_TS2=$$((EXPECTED_TS2 - 1)); \
 		echo "EXPECTED_TS1: $$EXPECTED_TS1, LOWER_TS1: $$LOWER_TS1"; \
 		echo "EXPECTED_TS2: $$EXPECTED_TS2, LOWER_TS2: $$LOWER_TS2"; \
 		OUTPUT="`${EXE} dummy2.csv list | tr -d '\n'`"; \
