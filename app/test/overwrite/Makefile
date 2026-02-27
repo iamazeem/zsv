@@ -40,8 +40,8 @@ ifeq ($(EXE),)
   $(error EXE is not defined)
 endif
 
-test: test-timestamp
-# 	test-1 test-2 test-excel-cells test-add test-remove test-old-value test-force \
+test: \
+	test-1 test-2 test-excel-cells test-add test-remove test-old-value test-force \
 	test-bulk-add test-bulk-remove test-echo-overwrite-auto test-timestamp
 
 test-1:
@@ -162,7 +162,8 @@ test-timestamp:
 		echo "EXPECTED_TS2: $$EXPECTED_TS2, LOWER_TS2: $$LOWER_TS2"; \
 		OUTPUT="`${EXE} dummy2.csv list | tr -d '\n'`"; \
 		echo "OUTPUT: $$OUTPUT"; \
-		echo "$$OUTPUT" | grep -q "${HEADER}1,2,ABC,\($$LOWER_TS1\|$$EXPECTED_TS1\),1,3,ABC,\($$LOWER_TS2\|$$EXPECTED_TS2\)," && ${TEST_PASS} || ${TEST_FAIL}; \
+		echo "$$OUTPUT" | grep -q "${HEADER}1,2,ABC,\($$LOWER_TS1\|$$EXPECTED_TS1\),1,3,ABC,\($$LOWER_TS2\|$$EXPECTED_TS2\)," \
+			&& ${TEST_PASS} || ${TEST_FAIL}; \
 	}
 
 test-echo-overwrite-auto:

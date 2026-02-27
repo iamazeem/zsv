@@ -86,52 +86,46 @@ if [ "$RUN_TESTS" = true ]; then
   echo "[INF] Running tests"
   rm -rf build "$PREFIX"
   "$MAKE" test
-  cd app/test
-  i=1
-  while [ $i -le 20 ]; do
-    make test-overwrite
-    i=$((i + 1))
-  done
   echo "[INF] Tests completed successfully!"
 
-  # if [ "$(echo "$LDFLAGS" | grep -- "-static")" != "" ] || [ "$STATIC_BUILD" = "1" ]; then
-  #   echo "[WRN] Dynamic extensions are not supported with static builds! Skipping tests..."
-  # else
-  #   echo "[INF] Configuring example extension and running example extension tests"
-  #   echo "[INF] (cd app/ext_example && $MAKE CONFIGFILE=../../config.mk test)"
-  #   (cd app/ext_example && "$MAKE" CONFIGFILE=../../config.mk test)
-  #   echo "[INF] Tests completed successfully!"
-  # fi
+  if [ "$(echo "$LDFLAGS" | grep -- "-static")" != "" ] || [ "$STATIC_BUILD" = "1" ]; then
+    echo "[WRN] Dynamic extensions are not supported with static builds! Skipping tests..."
+  else
+    echo "[INF] Configuring example extension and running example extension tests"
+    echo "[INF] (cd app/ext_example && $MAKE CONFIGFILE=../../config.mk test)"
+    (cd app/ext_example && "$MAKE" CONFIGFILE=../../config.mk test)
+    echo "[INF] Tests completed successfully!"
+  fi
 fi
 
-# if [ "$SKIP_BUILD" = false ]; then
-#   echo "[INF] Building"
-#   rm -rf build "$PREFIX" /usr/local/etc/zsv.ini
-#   "$MAKE" install
-#   tree "$PREFIX"
-#   echo "[INF] Built successfully!"
+if [ "$SKIP_BUILD" = false ]; then
+  echo "[INF] Building"
+  rm -rf build "$PREFIX" /usr/local/etc/zsv.ini
+  "$MAKE" install
+  tree "$PREFIX"
+  echo "[INF] Built successfully!"
 
-#   mkdir -p "$ARTIFACT_DIR"
+  mkdir -p "$ARTIFACT_DIR"
 
-#   if [ "$SKIP_ZIP_ARCHIVE" = false ]; then
-#     ZIP="$PREFIX.zip"
-#     echo "[INF] Compressing [$ZIP]"
-#     cd "$PREFIX"
-#     zip -r "$ZIP" .
-#     ls -hl "$ZIP"
-#     cd ..
-#     mv "$PREFIX/$ZIP" "$ARTIFACT_DIR"
-#     echo "[INF] Compressed! [$ZIP]"
-#   fi
+  if [ "$SKIP_ZIP_ARCHIVE" = false ]; then
+    ZIP="$PREFIX.zip"
+    echo "[INF] Compressing [$ZIP]"
+    cd "$PREFIX"
+    zip -r "$ZIP" .
+    ls -hl "$ZIP"
+    cd ..
+    mv "$PREFIX/$ZIP" "$ARTIFACT_DIR"
+    echo "[INF] Compressed! [$ZIP]"
+  fi
 
-#   if [ "$SKIP_TAR_ARCHIVE" = false ]; then
-#     TAR="$PREFIX.tar.gz"
-#     echo "[INF] Compressing [$TAR]"
-#     tar -czvf "$TAR" "$PREFIX"
-#     ls -hl "$TAR"
-#     mv "$TAR" "$ARTIFACT_DIR"
-#     echo "[INF] Compressed! [$TAR]"
-#   fi
-# fi
+  if [ "$SKIP_TAR_ARCHIVE" = false ]; then
+    TAR="$PREFIX.tar.gz"
+    echo "[INF] Compressing [$TAR]"
+    tar -czvf "$TAR" "$PREFIX"
+    ls -hl "$TAR"
+    mv "$TAR" "$ARTIFACT_DIR"
+    echo "[INF] Compressed! [$TAR]"
+  fi
+fi
 
 echo "[INF] --- [DONE] ---"
